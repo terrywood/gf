@@ -2,13 +2,13 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
+                <!--
               	<ref bean="auditTrigger"/>
+                -->
               	<ref bean="auditBedTrigger"/>
-              <!--  <ref bean="activeSqliteTrigger"/>-->
             </list>
         </property>
     </bean>

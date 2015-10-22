@@ -7,16 +7,19 @@ import com.gt.bmf.service.GfQueryLogService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -117,32 +120,26 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
             if(saleTotal<1.998d){
                 this.buy(upSalePrice,downSalePrice);
-                GfQueryLog model = new GfQueryLog();
+         /*       GfQueryLog model = new GfQueryLog();
                 model.setType("B");
                 model.setDownPrice(downSalePrice);
                 model.setUpPrice(upSalePrice);
-                //model.setQuality(2000);
                 model.setLastPrice(saleTotal);
                 model.setLogTime(new Date());
-
-            /*    double margin = (2-(total * 3/10000 + total))*2000;
-                model.setMargin(margin);*/
-                this.save(model);
+                this.save(model);*/
                 System.out.println("TO：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
                 System.out.println("-------------------------------------------------");
-                //System.out.println((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] buy price["+saleTotal+"]" );
             }else if(buyTotal>2.003d){
                 this.sale(upBuyPrice,downBuyPrice);
-                GfQueryLog model = new GfQueryLog();
+            /*    GfQueryLog model = new GfQueryLog();
                 model.setType("S");
                 model.setDownPrice(upBuyPrice);
                 model.setUpPrice(downBuyPrice);
-               // model.setQuality(2000);
+
                 model.setLastPrice(buyTotal);
                 model.setLogTime(new Date());
-        /*        double margin = (total-2)*2000 - ((total-2)*2000*1/10000);
-                model.setMargin(margin);*/
-                this.save(model);
+
+                this.save(model);*/
 
              //   System.out.println((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
                 System.out.println("TO：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
@@ -162,9 +159,12 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             return;
         }else{
 
-            PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-            cm.setMaxTotal(100);
-            CloseableHttpClient  httpclient = HttpClients.custom().setConnectionManager(cm) .build();
+/*            PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+            cm.setMaxTotal(5);
+            CloseableHttpClient  httpclient = HttpClients.custom().setConnectionManager(cm) .build();*/
+
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+
             CloseableHttpResponse response = null;
             try {
 
@@ -185,7 +185,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 formparams.add(new BasicNameValuePair("entrust_price_1",String.valueOf(downPrice)));
                 formparams.add(new BasicNameValuePair("entrust_bs", "1"));
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-                System.out.println("formparams->"+entity.toString());
+
 
                 httpPost.setEntity(entity);
 
@@ -193,15 +193,15 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
                 String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
-                System.out.print(response.getStatusLine().getStatusCode());
-                System.out.print(responseBody);
+                System.out.println(response.getStatusLine().getStatusCode());
+                System.out.println(responseBody);
 
 
 
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                lockBuyAction = true;
+               // lockBuyAction = true;
             }
         }
     }
@@ -224,12 +224,10 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             return;
         }else{
 
-            PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-            cm.setMaxTotal(100);
-            CloseableHttpClient  httpclient = HttpClients.custom().setConnectionManager(cm) .build();
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+
             CloseableHttpResponse response = null;
             try {
-
                 HttpPost httpPost = new HttpPost(url);
                 httpPost.addHeader("Cookie",gfCookie);
                 List<NameValuePair> formparams = new ArrayList<NameValuePair>();
@@ -245,27 +243,22 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 formparams.add(new BasicNameValuePair("entrust_amount_1", "1000"));
                 formparams.add(new BasicNameValuePair("entrust_price_1",String.valueOf(downPrice)));
                 formparams.add(new BasicNameValuePair("entrust_bs", "2"));
-
-
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-
-                System.out.println("formparams->"+entity.toString());
-
                 httpPost.setEntity(entity);
-
                 response = httpclient.execute(httpPost);
-
                 String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
-                System.out.print(response.getStatusLine().getStatusCode());
-                System.out.print(responseBody);
 
+                System.out.println(response.getStatusLine().getStatusCode());
+                System.out.println(responseBody);
 
+                EntityUtils.consume(entity);
 
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                lockSaleAction = true;
+
+               // lockSaleAction = true;
             }
         }
     }
