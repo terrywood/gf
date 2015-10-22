@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+              	<ref bean="auditTrigger"/>
+              	<ref bean="auditBedTrigger"/>
+              <!--  <ref bean="activeSqliteTrigger"/>-->
+            </list>
+        </property>
+    </bean>
+<!--
+    <bean id="buildSQLiteJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass">
+            <value> com.gt.bmf.cronjob.AutoBuildTerminal</value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="sessionFactory" value-ref="bmfSessionFactory"></entry>
+                <entry key="gfQueryLogService" value-ref="gfQueryLogService"></entry>
+            </map>
+        </property>
+    </bean>
+
+
+    <bean id="activeSqliteTrigger"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <description>Delete expired captcha</description>
+        <property name="jobDetail">
+            <ref bean="buildSQLiteJob" />
+        </property>
+        <property name="cronExpression">
+            <value>${cronjob.expression.sync}</value>
+        </property>
+    </bean>-->
+
+	<bean id="auditTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<description>Gen Random Assign</description>
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="gfQueryLogService"></property>
+				<property name="targetMethod">
+					<value>checkData</value>
+				</property>
+                <property name="concurrent" value="false"/>
+			</bean>
+		</property>
+		<property name="cronExpression">
+			<value>${cronjob.expression.sync}</value>
+		</property>
+	</bean>
+	<bean id="auditBedTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<description>Gen Random Assign</description>
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="gfQueryLogBedService"></property>
+				<property name="targetMethod">
+					<value>checkData</value>
+				</property>
+                <property name="concurrent" value="false"/>
+			</bean>
+		</property>
+		<property name="cronExpression">
+			<value>${cronjob.expression.sync}</value>
+		</property>
+	</bean>
+
+</beans>
