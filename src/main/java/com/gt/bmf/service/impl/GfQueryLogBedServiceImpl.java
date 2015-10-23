@@ -118,7 +118,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
           //  System.out.println("UP：S1["+upSalePrice+"]　B1["+upBuyPrice+"] Last["+upLastPrice+"]");
           //  System.out.println("DW：S1["+downSalePrice+"]　B1["+downBuyPrice+"] Last["+downloadLastPrice+"]");
 
-            if(saleTotal<1.998d){
+            if(saleTotal<1.997d){
                 this.buy(upSalePrice,downSalePrice);
          /*       GfQueryLog model = new GfQueryLog();
                 model.setType("B");
@@ -127,7 +127,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 model.setLastPrice(saleTotal);
                 model.setLogTime(new Date());
                 this.save(model);*/
-                System.out.println("TO：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
+                System.out.println("Buy：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
                 System.out.println("-------------------------------------------------");
             }else if(buyTotal>2.003d){
                 this.sale(upBuyPrice,downBuyPrice);
@@ -142,7 +142,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 this.save(model);*/
 
              //   System.out.println((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
-                System.out.println("TO：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
+                System.out.println("Sale：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
                 System.out.println("-------------------------------------------------");
             }
 
@@ -154,26 +154,19 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
     }
 
     public void buy(double upPrice,double downPrice){
-        if(lockBuyAction){
+    /*    if(lockBuyAction){
             System.out.println("lockBuyAction is true,please unlock");
             return;
         }else{
-
-/*            PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-            cm.setMaxTotal(5);
-            CloseableHttpClient  httpclient = HttpClients.custom().setConnectionManager(cm) .build();*/
-
+*/
             CloseableHttpClient httpclient = HttpClients.createDefault();
-
             CloseableHttpResponse response = null;
             try {
-
                 HttpPost httpPost = new HttpPost(url);
                 httpPost.addHeader("Cookie",gfCookie);
                 List<NameValuePair> formparams = new ArrayList<NameValuePair>();
                 formparams.add(new BasicNameValuePair("classname", "com.gf.etrade.control.NXBUF2Control"));
                 formparams.add(new BasicNameValuePair("method", "nxbdoubleentrust"));
-
                 formparams.add(new BasicNameValuePair("dse_sessionId", gfSession));
 
                 formparams.add(new BasicNameValuePair("fund_code", "878004"));
@@ -193,7 +186,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
                 String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
-                System.out.println(response.getStatusLine().getStatusCode());
+                System.out.println("878004["+upPrice+"] 878005["+downPrice+"]");
                 System.out.println(responseBody);
 
 
@@ -203,7 +196,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             } finally {
                // lockBuyAction = true;
             }
-        }
+       // }
     }
 
     /**
@@ -219,10 +212,10 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
      entrust_bs:2
      * */
     public void sale(double upPrice,double downPrice){
-        if(lockSaleAction){
+  /*      if(lockSaleAction){
             System.out.println("lockSaleAction is true,please unlock");
             return;
-        }else{
+        }else{*/
 
             CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -249,7 +242,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
 
-                System.out.println(response.getStatusLine().getStatusCode());
+                System.out.println("878004["+upPrice+"] 878005["+downPrice+"]");
                 System.out.println(responseBody);
 
                 EntityUtils.consume(entity);
@@ -260,7 +253,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
                // lockSaleAction = true;
             }
-        }
+     //   }
     }
 
 
