@@ -1,5 +1,6 @@
 package com.gt.bmf.service.impl;
 
+import com.google.gson.Gson;
 import com.gt.bmf.dao.BmfBaseDao;
 import com.gt.bmf.dao.GfQueryLogDao;
 import com.gt.bmf.pojo.GfQueryLog;
@@ -20,7 +21,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -129,7 +129,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 this.save(model);*/
                 System.out.println("Buy：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
                 System.out.println("-------------------------------------------------");
-            }else if(buyTotal>2.003d){
+            }else if(buyTotal>2.002d){
                 this.sale(upBuyPrice,downBuyPrice);
             /*    GfQueryLog model = new GfQueryLog();
                 model.setType("S");
@@ -281,7 +281,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
     }
 
     static class GetThread extends Thread {
-        ObjectMapper objectMapper = new ObjectMapper();
+        Gson gson = new Gson();
 
         private final CloseableHttpClient httpClient;
         private final HttpContext context;
@@ -315,10 +315,11 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 CloseableHttpResponse response = httpClient.execute(httpget, context);
                 try {
                    // System.out.println(id + " - get executed");
-                    Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
-                    Map data = (Map)((List)map.get("data")).get(0);
+                /*    Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
+                    Map data = (Map)((List)map.get("data")).get(0);*/
+                    Map map = gson.fromJson(IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8), Map.class);
+                    Map data = (Map) ((List) map.get("data")).get(0);
                     this.data = data;
-
                     /*double ret =  Double.valueOf(data.get("last_price").toString());
                     price = ret;*/
                 } finally {
