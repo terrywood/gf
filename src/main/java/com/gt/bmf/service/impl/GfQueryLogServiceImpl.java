@@ -120,7 +120,7 @@ public class GfQueryLogServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implem
                 model.setDownPrice(downSalePrice);
                 model.setUpPrice(upSalePrice);
                 //model.setQuality(2000);
-                model.setLastPrice(saleTotal);
+             //   model.setLastPrice(saleTotal);
                 model.setLogTime(new Date());
 
             /*    double margin = (2-(total * 3/10000 + total))*2000;
@@ -136,7 +136,7 @@ public class GfQueryLogServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implem
                 model.setDownPrice(upBuyPrice);
                 model.setUpPrice(downBuyPrice);
                // model.setQuality(2000);
-                model.setLastPrice(buyTotal);
+            //    model.setLastPrice(buyTotal);
                 model.setLogTime(new Date());
         /*        double margin = (total-2)*2000 - ((total-2)*2000*1/10000);
                 model.setMargin(margin);*/

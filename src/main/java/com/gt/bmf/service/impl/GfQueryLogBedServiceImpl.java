@@ -5,7 +5,9 @@ import com.gt.bmf.dao.BmfBaseDao;
 import com.gt.bmf.dao.GfQueryLogDao;
 import com.gt.bmf.pojo.GfQueryLog;
 import com.gt.bmf.service.GfQueryLogService;
+import com.gt.bmf.util.NumberUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -28,17 +30,21 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Service("gfQueryLogBedService")
 public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implements GfQueryLogService {
     @Value("${gf.cookie}")
     private String gfCookie;
 
-
+    private static Logger logger = Logger.getLogger("GfQueryLogBedServiceImpl");
 
     @Value("${gf.session}")
     private String gfSession;
@@ -49,7 +55,11 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
     private boolean lockBuyAction = false;
     private boolean lockSaleAction = false;
 
-
+    private static List<Double> upSale = new ArrayList<Double>();
+    private static List<Double> upBuy = new ArrayList<Double>();
+    private static List<Double> downSale = new ArrayList<Double>();
+    private static List<Double> downBuy = new ArrayList<Double>();
+    DecimalFormat decimalFormat = new DecimalFormat("###.######");
 
     @Autowired
 	@Qualifier("gfQueryLogDao")
@@ -57,12 +67,21 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 	public void setBmfBaseDao(BmfBaseDao<GfQueryLog> bmfBaseDao) {
 		this.bmfBaseDao = bmfBaseDao;
 		this.gfQueryLogDao = (GfQueryLogDao) bmfBaseDao;
-
 	}
 
-    @PostConstruct
-    public void init(){
 
+    public void initVariance(double upSalePrice,double upBuyPrice,double downSalePrice,double downBuyPrice){
+        System.out.println("upBuyPrice["+upBuyPrice+"] upSalePrice["+upSalePrice+"] downBuyPrice["+downBuyPrice+"] downSalePrice["+downSalePrice+"]");
+        upSale.add(upSalePrice);
+        upBuy.add(upBuyPrice);
+        downSale.add(downSalePrice);
+        downBuy.add(downBuyPrice);
+        if(upSale.size()>15){
+            upSale.remove(0);
+            upBuy.remove(0);
+            downSale.remove(0);
+            downBuy.remove(0);
+        }
     }
 
     public void checkData() throws IOException, InterruptedException {
@@ -76,10 +95,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                     "https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878004&dse_sessionId="+gfSession,
                     "https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878005&dse_sessionId="+gfSession
             };
-            // create a thread for each URI
-            GetThread[] threads = new GetThread[urisToGet.length];
-          //  String session="Hm_lvt_07e1b3469e412552a15451441d5e3973=1438569747,1439519153; name=value; JSESSIONID=C40E4F8E71E716B866BCC9E95F6FB993; dse_sessionId=DCCF5D64389FC474A8B841A3EFDA9109; userId=*A0*10*B1t*0F*E2*0E*B1*91z*C66*C2*BCa*AEG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00";
-           // String session="Hm_lvt_07e1b3469e412552a15451441d5e3973=1438569747,1439519153; name=value; JSESSIONID=C40E4F8E71E716B866BCC9E95F6FB993; dse_sessionId=DCCF5D64389FC474A8B841A3EFDA9109; userId=*A0*10*B1t*0F*E2*0E*B1*91z*C66*C2*BCa*AEG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00";
+            GetThread[] threads = new GetThread[2];
             for (int i = 0; i < threads.length; i++) {
                 HttpGet httpget = new HttpGet(urisToGet[i]);
                 httpget.addHeader("Cookie",gfCookie);
@@ -93,72 +109,83 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             for (int j = 0; j < threads.length; j++) {
                 threads[j].join();
             }
-
-
-
             Map upData  = threads[0].getData();
             Map downData  = threads[1].getData();
-            double upSalePrice  =  Double.valueOf(upData.get("sale_price1").toString());
-            double downSalePrice  =  Double.valueOf(downData.get("sale_price1").toString());
+            double upSalePrice  =  Double.parseDouble(upData.get("sale_price1").toString());
+            double downSalePrice  =  Double.parseDouble(downData.get("sale_price1").toString());
+            double upBuyPrice  =  Double.parseDouble(upData.get("buy_price1").toString());
+            double downBuyPrice  =  Double.parseDouble(downData.get("buy_price1").toString());
 
-            double upBuyPrice  =  Double.valueOf(upData.get("buy_price1").toString());
-            double downBuyPrice  =  Double.valueOf(downData.get("buy_price1").toString());
-
-            double upLastPrice  =  Double.valueOf(upData.get("last_price").toString());
-            double downloadLastPrice  =  Double.valueOf(downData.get("last_price").toString());
-
-
-
-            double saleTotal = upSalePrice+downSalePrice;
+            initVariance(upSalePrice,upBuyPrice,downSalePrice,downBuyPrice);
             double buyTotal = upBuyPrice+downBuyPrice;
-
-            double lastTotal = upLastPrice+downloadLastPrice;
-
-
-          //  System.out.println("UP：S1["+upSalePrice+"]　B1["+upBuyPrice+"] Last["+upLastPrice+"]");
-          //  System.out.println("DW：S1["+downSalePrice+"]　B1["+downBuyPrice+"] Last["+downloadLastPrice+"]");
-
-            if(saleTotal<1.997d){
+            double saleTotal = upSalePrice+downSalePrice;
+            if(saleTotal<1.998d){
+                double upSaleAmount  =  Integer.valueOf(upData.get("sale_amount1").toString());
+                double downSaleAmount  =  Integer.valueOf(downData.get("sale_amount1").toString());
                 this.buy(upSalePrice,downSalePrice);
-         /*       GfQueryLog model = new GfQueryLog();
+                GfQueryLog model = new GfQueryLog();
                 model.setType("B");
                 model.setDownPrice(downSalePrice);
                 model.setUpPrice(upSalePrice);
-                model.setLastPrice(saleTotal);
+               // model.setLastPrice(saleTotal);
                 model.setLogTime(new Date());
-                this.save(model);*/
-                System.out.println("Buy：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
-                System.out.println("-------------------------------------------------");
-            }else if(buyTotal>2.002d){
-                this.sale(upBuyPrice,downBuyPrice);
-            /*    GfQueryLog model = new GfQueryLog();
+
+                double v1 = NumberUtils.getStandardDiviation(upSale);
+                double v2 = NumberUtils.getStandardDiviation(downSale);
+
+                model.setUpVariance(v1);
+                model.setDownVariance(v2);
+
+                this.save(model);
+
+               logger.info("Buy：S+["+String.valueOf(saleTotal)+"]　  code[878004,878005]");
+               logger.info("upData->"+upData);
+               logger.info("downData->"+downData);
+               logger.info("-------------------------------------------------");
+            }else if(buyTotal>2.003d){
+               // this.sale(upBuyPrice, downBuyPrice);
+
+                GfQueryLog model = new GfQueryLog();
                 model.setType("S");
                 model.setDownPrice(upBuyPrice);
                 model.setUpPrice(downBuyPrice);
 
-                model.setLastPrice(buyTotal);
+                //model.setLastPrice(buyTotal);
                 model.setLogTime(new Date());
 
-                this.save(model);*/
+                double v1 = NumberUtils.getStandardDiviation(upBuy);
+                double v2 = NumberUtils.getStandardDiviation(downBuy);
 
-             //   System.out.println((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
-                System.out.println("Sale：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] Last["+String.valueOf(lastTotal)+"] code[878004,878005]");
-                System.out.println("-------------------------------------------------");
+                model.setUpVariance(v1);
+                model.setDownVariance(v2);
+
+                this.save(model);
+
+             //  logger.info((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
+               logger.info("Sale：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] code[878004,878005]");
+               logger.info("upData->"+upData);
+               logger.info("downData->"+downData);
+               logger.info("-------------------------------------------------");
+            }else{
+                double v1 = NumberUtils.getStandardDiviation(upBuy);
+                double v2= NumberUtils.getVariance(upBuy);
+
+                //System.out.println(StringUtils.join(upBuy, ",") + "---->方差["+v2+"] 标准差["+v1+"]" );
+                System.out.println( "---->方差["+decimalFormat.format(v2)+"] 标准差["+decimalFormat.format(v1)+"]" );
+
+             /*   double v2 = NumberUtils.getStandardDiviation(downBuy);
+                double v3 = NumberUtils.getStandardDiviation(upSale);
+                double v4 = NumberUtils.getStandardDiviation(downSale);*/
             }
 
-            // System.out.println("end");
+            //logger.info("end");
         } finally {
             httpclient.close();
         }
 
     }
-
     public void buy(double upPrice,double downPrice){
-    /*    if(lockBuyAction){
-            System.out.println("lockBuyAction is true,please unlock");
-            return;
-        }else{
-*/
+       // long c = System.currentTimeMillis();
             CloseableHttpClient httpclient = HttpClients.createDefault();
             CloseableHttpResponse response = null;
             try {
@@ -183,20 +210,20 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 httpPost.setEntity(entity);
 
                 response = httpclient.execute(httpPost);
+                //String responseBody = EntityUtils.toString(entity);
 
-                String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
+               String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
-                System.out.println("878004["+upPrice+"] 878005["+downPrice+"]");
-                System.out.println(responseBody);
+               logger.info("878004["+upPrice+"] 878005["+downPrice+"]");
+               logger.info(responseBody);
 
-
+               // System.out.println((System.currentTimeMillis() - c) + " ");
 
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                // lockBuyAction = true;
             }
-       // }
     }
 
     /**
@@ -213,7 +240,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
      * */
     public void sale(double upPrice,double downPrice){
   /*      if(lockSaleAction){
-            System.out.println("lockSaleAction is true,please unlock");
+           logger.info("lockSaleAction is true,please unlock");
             return;
         }else{*/
 
@@ -242,8 +269,8 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
 
-                System.out.println("878004["+upPrice+"] 878005["+downPrice+"]");
-                System.out.println(responseBody);
+               logger.info("878004["+upPrice+"] 878005["+downPrice+"]");
+               logger.info(responseBody);
 
                 EntityUtils.consume(entity);
 
@@ -311,10 +338,10 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
         @Override
         public void run() {
             try {
-               // System.out.println(id + " - about to get something from " + httpget.getURI());
+               //logger.info(id + " - about to get something from " + httpget.getURI());
                 CloseableHttpResponse response = httpClient.execute(httpget, context);
                 try {
-                   // System.out.println(id + " - get executed");
+                   //logger.info(id + " - get executed");
                 /*    Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
                     Map data = (Map)((List)map.get("data")).get(0);*/
                     Map map = gson.fromJson(IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8), Map.class);
@@ -326,7 +353,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                     response.close();
                 }
             } catch (Exception e) {
-                System.out.println(id + " - error: " + e);
+               logger.info(id + " - error: " + e);
             }
         }
 

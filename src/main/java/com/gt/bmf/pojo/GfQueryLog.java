@@ -18,32 +18,33 @@ public class GfQueryLog implements Serializable {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
+
 	private Long id;
     private Double upPrice;
     private Double downPrice;
-    private Double lastPrice;
-    private String fundName;
-    private Double margin;
-
-    public Double getMargin() {
-        return margin;
-    }
-
-    public void setMargin(Double margin) {
-        this.margin = margin;
-    }
-
-    public Double getLastPrice() {
-        return lastPrice;
-    }
-
-    public void setLastPrice(Double lastPrice) {
-        this.lastPrice = lastPrice;
-    }
-
+    private Double upVariance;
+    private Double downVariance;
     private Date logTime;
     private Integer quality;
     private String type;
+
+    public Double getUpVariance() {
+        return upVariance;
+    }
+
+    public void setUpVariance(Double upVariance) {
+        this.upVariance = upVariance;
+    }
+
+    public Double getDownVariance() {
+        return downVariance;
+    }
+
+    public void setDownVariance(Double downVariance) {
+        this.downVariance = downVariance;
+    }
+
+
 
     public Long getId() {
         return id;
@@ -69,13 +70,7 @@ public class GfQueryLog implements Serializable {
         this.downPrice = downPrice;
     }
 
-    public String getFundName() {
-        return fundName;
-    }
 
-    public void setFundName(String fundName) {
-        this.fundName = fundName;
-    }
 
     public Date getLogTime() {
         return logTime;

@@ -9,9 +9,9 @@ public class TestSqliteService {
 
     public static void main(String[] args) throws Exception {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring/bmf_applicationContext.xml");
-        service = (GfQueryLogService) ctx.getBean("gfQueryLogService");
-
-        service.buy(0.629d,1.371d);
+        service = (GfQueryLogService) ctx.getBean("gfQueryLogBedService");
+        for(int i=0;i<25;i++)
+           service.buy(1d,1d);
 
         System.exit(0);
 
