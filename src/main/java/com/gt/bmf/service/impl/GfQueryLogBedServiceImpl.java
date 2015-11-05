@@ -50,7 +50,8 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
     private String gfSession;
 	private GfQueryLogDao gfQueryLogDao;
 
-    private String url ="https://trade.gf.com.cn/entry";
+    //private String url ="https://trade.gf.com.cn/entry";
+    private String url ="https://etrade.gf.com.cn/entry";
 
     private boolean lockBuyAction = false;
     private boolean lockSaleAction = false;
@@ -71,7 +72,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
 
     public void initVariance(double upSalePrice,double upBuyPrice,double downSalePrice,double downBuyPrice){
-        System.out.println("upBuyPrice["+upBuyPrice+"] upSalePrice["+upSalePrice+"] downBuyPrice["+downBuyPrice+"] downSalePrice["+downSalePrice+"]");
+        //System.out.println("upBuyPrice["+upBuyPrice+"] upSalePrice["+upSalePrice+"] downBuyPrice["+downBuyPrice+"] downSalePrice["+downSalePrice+"]");
         upSale.add(upSalePrice);
         upBuy.add(upBuyPrice);
         downSale.add(downSalePrice);
@@ -92,8 +93,8 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
         try {
             // create an array of URIs to perform GETs on
             String[] urisToGet = {
-                    "https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878004&dse_sessionId="+gfSession,
-                    "https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878005&dse_sessionId="+gfSession
+                    "https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878004&dse_sessionId="+gfSession,
+                    "https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878005&dse_sessionId="+gfSession
             };
             GetThread[] threads = new GetThread[2];
             for (int i = 0; i < threads.length; i++) {
@@ -120,9 +121,9 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             double buyTotal = upBuyPrice+downBuyPrice;
             double saleTotal = upSalePrice+downSalePrice;
             if(saleTotal<1.998d){
+                this.buy(upSalePrice,downSalePrice);
                 double upSaleAmount  =  Integer.valueOf(upData.get("sale_amount1").toString());
                 double downSaleAmount  =  Integer.valueOf(downData.get("sale_amount1").toString());
-                this.buy(upSalePrice,downSalePrice);
                 GfQueryLog model = new GfQueryLog();
                 model.setType("B");
                 model.setDownPrice(downSalePrice);
@@ -138,12 +139,13 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
                 this.save(model);
 
-               logger.info("Buy：S+["+String.valueOf(saleTotal)+"]　  code[878004,878005]");
-               logger.info("upData->"+upData);
-               logger.info("downData->"+downData);
-               logger.info("-------------------------------------------------");
+               System.out.println("Buy：S+["+String.valueOf(saleTotal)+"]　  code[878004,878005]");
+               System.out.println("upData->"+upData);
+               System.out.println("downData->"+downData);
+
+               System.out.println("-------------------------------------------------");
             }else if(buyTotal>2.003d){
-               // this.sale(upBuyPrice, downBuyPrice);
+                this.sale(upBuyPrice, downBuyPrice);
 
                 GfQueryLog model = new GfQueryLog();
                 model.setType("S");
@@ -161,24 +163,18 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
                 this.save(model);
 
-             //  logger.info((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
-               logger.info("Sale：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] code[878004,878005]");
-               logger.info("upData->"+upData);
-               logger.info("downData->"+downData);
-               logger.info("-------------------------------------------------");
+             //  System.out.println((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
+               System.out.println("Sale：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] code[878004,878005]");
+               System.out.println("upData->"+upData);
+               System.out.println("downData->"+downData);
+               System.out.println("-------------------------------------------------");
+
             }else{
-                double v1 = NumberUtils.getStandardDiviation(upBuy);
-                double v2= NumberUtils.getVariance(upBuy);
-
-                //System.out.println(StringUtils.join(upBuy, ",") + "---->方差["+v2+"] 标准差["+v1+"]" );
-                System.out.println( "---->方差["+decimalFormat.format(v2)+"] 标准差["+decimalFormat.format(v1)+"]" );
-
-             /*   double v2 = NumberUtils.getStandardDiviation(downBuy);
-                double v3 = NumberUtils.getStandardDiviation(upSale);
-                double v4 = NumberUtils.getStandardDiviation(downSale);*/
+               /* double v1 = NumberUtils.getStandardDiviation(upBuy);
+                System.out.println( "---->标准差["+decimalFormat.format(v1)+"]" );*/
             }
 
-            //logger.info("end");
+            //System.out.println("end");
         } finally {
             httpclient.close();
         }
@@ -214,8 +210,8 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
 
                String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
-               logger.info("878004["+upPrice+"] 878005["+downPrice+"]");
-               logger.info(responseBody);
+               System.out.println("878004["+upPrice+"] 878005["+downPrice+"]");
+               System.out.println(responseBody);
 
                // System.out.println((System.currentTimeMillis() - c) + " ");
 
@@ -240,7 +236,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
      * */
     public void sale(double upPrice,double downPrice){
   /*      if(lockSaleAction){
-           logger.info("lockSaleAction is true,please unlock");
+           System.out.println("lockSaleAction is true,please unlock");
             return;
         }else{*/
 
@@ -269,8 +265,8 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
 
 
-               logger.info("878004["+upPrice+"] 878005["+downPrice+"]");
-               logger.info(responseBody);
+               System.out.println("878004["+upPrice+"] 878005["+downPrice+"]");
+               System.out.println(responseBody);
 
                 EntityUtils.consume(entity);
 
@@ -338,10 +334,10 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
         @Override
         public void run() {
             try {
-               //logger.info(id + " - about to get something from " + httpget.getURI());
+               //System.out.println(id + " - about to get something from " + httpget.getURI());
                 CloseableHttpResponse response = httpClient.execute(httpget, context);
                 try {
-                   //logger.info(id + " - get executed");
+                   //System.out.println(id + " - get executed");
                 /*    Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
                     Map data = (Map)((List)map.get("data")).get(0);*/
                     Map map = gson.fromJson(IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8), Map.class);
@@ -353,7 +349,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                     response.close();
                 }
             } catch (Exception e) {
-               logger.info(id + " - error: " + e);
+               System.out.println(id + " - error: " + e);
             }
         }
 

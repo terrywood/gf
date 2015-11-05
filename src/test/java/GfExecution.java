@@ -1,3 +1,5 @@
+import org.apache.commons.io.IOUtils;
+import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -13,50 +15,63 @@ import java.util.List;
 import java.util.Map;
 
 public class GfExecution {
+
+    private static String url ="https://etrade.gf.com.cn/entry";
+    private static  String  session="JSESSIONID=030AA63B98607C0E34C2918EBF5F63F1; dse_sessionId=0EA34478BEE1723D05200854A91B3920; userId=*EB*88*B9*8B*1E*F0d*D4*E0Pa*08*D9*B5*A4*83G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00; name=value";
+    private static String sessionId ="0EA34478BEE1723D05200854A91B3920";
+/*
+     private static String url ="https://trade.gf.com.cn/entry";
+    private static  String  session="name=value; JSESSIONID=BE329CF69F2383C4FFC25F90B7B43252; dse_sessionId=A8545391B402DF2A9C2CB2AB5C712887; userId=*C4*A7*DD*F9*FE*89*92*F4*BEN*CE*EA*D8*AC*B3*00G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00";
+    private static String sessionId ="A8545391B402DF2A9C2CB2AB5C712887";*/
     public static void main(String[] args) throws Exception {
         // Create an HttpClient with the ThreadSafeClientConnManager.
         // This connection manager must be used if more than one thread will
         // be using the HttpClient.
 
-        long c1 = System.currentTimeMillis();
-        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(100);
-
-        CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm) .build();
-        try {
-            // create an array of URIs to perform GETs on
-            String[] urisToGet = {
-                    "https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878002&dse_sessionId=DCCF5D64389FC474A8B841A3EFDA9109",
-                    "https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878003&dse_sessionId=DCCF5D64389FC474A8B841A3EFDA9109"
-            };
-
-            // create a thread for each URI
-            GetThread[] threads = new GetThread[urisToGet.length];
-            String session="Hm_lvt_07e1b3469e412552a15451441d5e3973=1438569747,1439519153; name=value; JSESSIONID=C40E4F8E71E716B866BCC9E95F6FB993; dse_sessionId=DCCF5D64389FC474A8B841A3EFDA9109; userId=*A0*10*B1t*0F*E2*0E*B1*91z*C66*C2*BCa*AEG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00";
-            for (int i = 0; i < threads.length; i++) {
-                HttpGet httpget = new HttpGet(urisToGet[i]);
-                httpget.addHeader("Cookie",session);
-                threads[i] = new GetThread(httpclient, httpget, i + 1);
-            }
-
-            // start the threads
-            for (int j = 0; j < threads.length; j++) {
-                threads[j].start();
-            }
-
-            // join the threads
-            for (int j = 0; j < threads.length; j++) {
-                threads[j].join();
-            }
-
-            System.out.println(threads[0].getPrice()+threads[1].getPrice());
+        long total =0l;
+        for(int k =0;k<100;k++){
 
 
-            System.out.println(System.currentTimeMillis()-c1 );
-            System.out.println("end");
+            long c1 = System.currentTimeMillis();
+            PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+            cm.setMaxTotal(100);
+            CloseableHttpClient httpclient = HttpClients.custom().setConnectionManager(cm) .build();
+            try {
+                // create an array of URIs to perform GETs on
+                String[] urisToGet = {
+                        url+"?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878002&dse_sessionId="+sessionId,
+                        url+"?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878003&dse_sessionId="+sessionId
+                };
+                // create a thread for each URI
+                GetThread[] threads = new GetThread[urisToGet.length];
+                for (int i = 0; i < threads.length; i++) {
+                    HttpGet httpget = new HttpGet(urisToGet[i]);
+                    httpget.addHeader("Cookie",session);
+                    threads[i] = new GetThread(httpclient, httpget, i + 1);
+                }
+
+                // start the threads
+                for (int j = 0; j < threads.length; j++) {
+                    threads[j].start();
+                }
+                // join the threads
+                for (int j = 0; j < threads.length; j++) {
+                    threads[j].join();
+                }
+              //  System.out.println(threads[0].getPrice()+threads[1].getPrice());
+               long times =  System.currentTimeMillis()-c1;
+                total+=times;
+               //System.out.println("end");
+
+
         } finally {
             httpclient.close();
         }
+
+        }
+
+        System.out.println(total);
+
     }
 
     /**
@@ -91,10 +106,10 @@ public class GfExecution {
                 CloseableHttpResponse response = httpClient.execute(httpget, context);
                 try {
                     System.out.println(id + " - get executed");
-                    Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
-                    Map data = (Map)((List)map.get("data")).get(0);
-                    double ret =  Double.valueOf(data.get("last_price").toString());
-                    price = ret;
+                    String  responseBody = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
+
+                    System.out.println(responseBody);
+
                 } finally {
                     response.close();
                 }

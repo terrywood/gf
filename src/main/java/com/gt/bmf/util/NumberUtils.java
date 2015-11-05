@@ -171,10 +171,14 @@ public class NumberUtils {
     public static void main(String[] args) {
    /*     List<Double> testData=new  ArrayList<Double>();
      */
+        List<Double> testData=new  ArrayList<Double>();
+        testData.add(10d);
+        testData.add(10d);
+        testData.add(10d);
+        testData.add(10d);
+        testData.add(25d);
+        testData.add(20d);
 
-        for(double i=1;i<101;i++){
-            NumberUtils utils = new NumberUtils();
-            utils.addListItem(i);
             System.out.println("最大值：" + getMax(testData));
             System.out.println("最小值："+getMin(testData));
             System.out.println("计数："+getCount(testData));
@@ -183,7 +187,7 @@ public class NumberUtils {
             System.out.println("方差："+getVariance(testData));
             System.out.println("标准差："+getStandardDiviation(testData));
             System.out.println("---------------------------------------------");
-        }
+
 
 
 
