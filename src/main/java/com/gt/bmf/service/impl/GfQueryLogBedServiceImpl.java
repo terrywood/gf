@@ -91,7 +91,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
         cm.setMaxTotal(10);
         CloseableHttpClient  httpclient = HttpClients.custom().setConnectionManager(cm) .build();
         try {
-            // create an array of URIs to perform GETs on
+            // create an array of URIs to perform GETs on a
             String[] urisToGet = {
                     "https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878004&dse_sessionId="+gfSession,
                     "https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878005&dse_sessionId="+gfSession
