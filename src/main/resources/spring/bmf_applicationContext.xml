@@ -10,7 +10,6 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
                 http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-4.0.xsd
                 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
-                http://www.gtomato.com/springbeans/condition http://www.gtomato.com/springbeans/condition/condition.xsd
                 ">
 
 	<!-- Scan comment Bean -->

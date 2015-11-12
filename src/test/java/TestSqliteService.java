@@ -1,19 +1,27 @@
 import com.gt.bmf.service.GfQueryLogService;
+import com.gt.bmf.service.GridTradingService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public class TestSqliteService {
 
-    private static GfQueryLogService service;
+    private static GridTradingService service;
 
 
     public static void main(String[] args) throws Exception {
+     /*   System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+        System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+*/
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring/bmf_applicationContext.xml");
-        service = (GfQueryLogService) ctx.getBean("gfQueryLogBedService");
-        for(int i=0;i<25;i++)
+        service = (GridTradingService) ctx.getBean("gridTradingService");
+      /*  for(int i=0;i<25;i++)
            service.buy(1d,1d);
 
-        System.exit(0);
+        System.exit(0);*/
+
+        //service.save();
 
 	}
 

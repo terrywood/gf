@@ -115,7 +115,6 @@
 		</tx:attributes>
 	</tx:advice>
 	<aop:config expose-proxy="true" >
-		<!-- Only the business logic layer implemented Affairs -->
 		<aop:pointcut id="txPointcut"
 			expression="execution(* com.gt.bmf..service..*.*(..))" />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />

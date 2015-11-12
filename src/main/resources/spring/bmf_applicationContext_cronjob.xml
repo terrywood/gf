@@ -6,9 +6,10 @@
         <property name="triggers">
             <list>
                 <!--
+                <ref bean="auditBedTrigger"/>
               	<ref bean="auditTrigger"/>
                 -->
-              	<ref bean="auditBedTrigger"/>
+                <ref bean="auditGridTrigger"/>
             </list>
         </property>
     </bean>
@@ -64,6 +65,22 @@
 		</property>
 		<property name="cronExpression">
 			<value>${cronjob.expression.sync}</value>
+		</property>
+	</bean>
+
+	<bean id="auditGridTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<description>Gen Random Assign</description>
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="gridTradingService"></property>
+				<property name="targetMethod">
+					<value>check</value>
+				</property>
+                <property name="concurrent" value="false"/>
+			</bean>
+		</property>
+		<property name="cronExpression">
+			<value>0/4 * * * * ?</value>
 		</property>
 	</bean>
 

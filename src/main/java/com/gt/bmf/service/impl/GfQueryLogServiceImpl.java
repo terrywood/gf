@@ -35,9 +35,6 @@ import java.util.Map;
 public class GfQueryLogServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implements GfQueryLogService {
     @Value("${gf.cookie}")
     private String gfCookie;
-
-
-
     @Value("${gf.session}")
     private String gfSession;
 	private GfQueryLogDao gfQueryLogDao;

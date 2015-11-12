@@ -1,10 +1,8 @@
 package com.gt.bmf.service;
 
-import com.gt.bmf.pojo.BmfAppToken;
 import com.gt.bmf.pojo.GfQueryLog;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface GfQueryLogService extends BmfBaseService<GfQueryLog> {
     public void checkData() throws IOException, InterruptedException;
