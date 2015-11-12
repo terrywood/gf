@@ -27,8 +27,8 @@
 		</property>
 	</bean>
 
-	<bean id="md5PasswordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
-	
+	<!--<bean id="md5PasswordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
+	-->
 
 
 	<import resource="bmf_applicationContext-db.xml" />
