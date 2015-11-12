@@ -30,7 +30,30 @@
 	<!--<bean id="md5PasswordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
 	-->
 
+    <bean id="auditGridTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="concurrent" value="false"/>
+                <property name="targetObject" ref="gridTradingService" />
+                <property name="targetMethod">
+                    <value>check</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0/1 * * * * ?</value>
+        </property>
+    </bean>
 
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="auditGridTrigger"/>
+            </list>
+        </property>
+        <property name="startupDelay" value="10"/>
+    </bean>
 	<import resource="bmf_applicationContext-db.xml" />
-    <import resource="bmf_applicationContext_cronjob.xml" />
+
+ <!--   <import resource="bmf_applicationContext_cronjob.xml" />-->
 </beans>

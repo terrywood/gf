@@ -89,7 +89,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
        long c = System.currentTimeMillis();
        Gson gson = new Gson();
       // String result = null;
-       String httpUrl ="https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878002&dse_sessionId="+gfSession;
+       String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878003&dse_sessionId="+gfSession;
         try {
             URL url = new URL(httpUrl);
             HttpURLConnection connection = (HttpURLConnection) url .openConnection();
@@ -99,8 +99,14 @@ public class GridTradingServiceImpl  implements GridTradingService {
            // result= IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
             Map map = gson.fromJson(IOUtils.toString(connection.getInputStream(), Consts.UTF_8), Map.class);
             Map data = (Map)((List) map.get("data")).get(0);
-             Double lastPrice = MapUtils.getDouble(data,"last_price");
+            Double lastPrice = MapUtils.getDouble(data,"last_price");
             System.out.println(lastPrice);
+
+            GridTrading model = new GridTrading();
+            model.setFund("878002");
+            model.setPrice(lastPrice);
+            model.setLogTime(new Date());
+            gridTradingDao.save(model);
         } catch (Exception e) {
             e.printStackTrace();
         }
