@@ -14,7 +14,7 @@ public class TestSqliteService {
 /*
         String log4jConfPath = "D:\\Documents\\gf\\src\\main\\java\\log4j.properties";
         PropertyConfigurator.configure(log4jConfPath);*/
-        BasicConfigurator.configure();
+      //  BasicConfigurator.configure();
 
 
      /*   System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");

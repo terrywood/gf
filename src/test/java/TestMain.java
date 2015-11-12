@@ -11,7 +11,7 @@ import java.net.URL;
 public class TestMain {
     public static void main(String[] args)  {
 
-        String[] aa = StringUtils.split("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z", " ");
+  /*      String[] aa = StringUtils.split("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z", " ");
         for(String a : aa){
             System.out.println(a);
            try {
@@ -19,7 +19,56 @@ public class TestMain {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
+
+
+        TestMain test = new TestMain();
+
+        test.checkPrice(100d);
+        test.checkPrice(99d);
+        test.checkPrice(98d);
+        test.checkPrice(97d);
+        test.checkPrice(96d);
+        test.checkPrice(95d);
+        test.checkPrice(94.5d);
+
+
     }
 
+    double intPrice = 100d;
+    double grid = intPrice*0.01;
+    int lastNet =0;
+    //int maxNet = 5;
+    int minNet = -5;
+
+
+    public void  checkPrice(double lastPrice){
+       /* double upPrice = grid*(lastNet+1) +intPrice;
+        double downPrice = grid*(lastNet-1) +intPrice;*/
+        double curPrice = grid*(lastNet) +intPrice;
+        int step = new Double((lastPrice - curPrice)/grid).intValue();
+        if(step>0){
+            lastNet+=step;
+            System.out.println("step["+step+"] lastNet["+lastNet+"]");
+            System.out.println("sell:"+lastPrice);
+
+        /*    if(lastNet>maxNet){
+                System.out.println("out of max net");
+            }else{
+                System.out.println("sell:"+lastPrice);
+            }*/
+        }else if(step<0){
+            lastNet+=step;
+            if(lastNet<minNet){
+                System.out.println("out of min net");
+            }else{
+                System.out.println("step["+step+"] lastNet["+lastNet+"]");
+                System.out.println("buy");
+            }
+        }else{
+            System.out.println("noting");
+        }
+
+     //   System.out.println("upPrice["+upPrice+"] downPrice["+downPrice+"] lastNet["+lastNet+"]");
+    }
 }

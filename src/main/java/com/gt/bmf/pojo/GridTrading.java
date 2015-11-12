@@ -21,7 +21,7 @@ public class GridTrading {
     private Long id;
     private Double price;
     private Date logTime;
-    private Integer quality;
+    private Integer amount;
     private String type;
     private String fund;
 
@@ -49,12 +49,12 @@ public class GridTrading {
         this.logTime = logTime;
     }
 
-    public Integer getQuality() {
-        return quality;
+    public Integer getAmount() {
+        return amount;
     }
 
-    public void setQuality(Integer quality) {
-        this.quality = quality;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
 
     public String getType() {

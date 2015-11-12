@@ -18,7 +18,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -301,7 +300,7 @@ public class GfQueryLogServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implem
     }
 
     static class GetThread extends Thread {
-        ObjectMapper objectMapper = new ObjectMapper();
+        //ObjectMapper objectMapper = new ObjectMapper();
 
         private final CloseableHttpClient httpClient;
         private final HttpContext context;
@@ -335,9 +334,9 @@ public class GfQueryLogServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implem
                 CloseableHttpResponse response = httpClient.execute(httpget, context);
                 try {
                    // System.out.println(id + " - get executed");
-                    Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
-                    Map data = (Map)((List)map.get("data")).get(0);
-                    this.data = data;
+                   // Map map = objectMapper.readValue(response.getEntity().getContent(),Map.class);
+                  //  Map data = (Map)((List)map.get("data")).get(0);
+                 //   this.data = data;
 
                     /*double ret =  Double.valueOf(data.get("last_price").toString());
                     price = ret;*/

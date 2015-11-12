@@ -48,11 +48,11 @@
     </build>
 
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>1.4.3</version>
-        </dependency>
+        </dependency>-->
         <!-- spring begin -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -126,11 +126,11 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <dependency>
+    <!--    <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <version>3.2.4.RELEASE</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>aopalliance</groupId>
             <artifactId>aopalliance</artifactId>
@@ -323,6 +323,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -335,7 +336,7 @@
             <version>2.3.1</version>
         </dependency>
 
-     <dependency>
+   <!--  <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.9</version>
@@ -344,7 +345,7 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.9</version>
-        </dependency>
+        </dependency>-->
 
   <!--      <dependency>
             <groupId>com.ckeditor</groupId>
@@ -359,16 +360,17 @@
         </dependency>
 
 
-        <dependency>
+    <!--    <dependency>
             <groupId>com.mortennobel</groupId>
             <artifactId>java-image-scaling</artifactId>
             <version>0.8.5</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+
+     <!--   <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>1.9.1</version>
-        </dependency>
+        </dependency>-->
 
     <!--    <dependency>
             <groupId>org.quartz-scheduler</groupId>

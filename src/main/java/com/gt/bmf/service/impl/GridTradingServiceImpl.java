@@ -47,49 +47,21 @@ public class GridTradingServiceImpl  implements GridTradingService {
     private String gfSession;
     @Autowired
     private GridTradingDao gridTradingDao;
-
-
-    CloseableHttpClient httpClient ;
-
-
-    @PostConstruct
+   /* @PostConstruct
     public  void init(){
-/*
-        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(100);
-*/
-    }
-/*
-    public void check(){
-        check2();check1();
-        System.out.println("------------------------");
-    }
-    public void check2(){
-        long c = System.currentTimeMillis();
-       /*//* Gson gson = new Gson();
-        httpClient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("https://trade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878002&dse_sessionId="+gfSession);
-        httpget.addHeader("Cookie",gfCookie);
-        String result = null;
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpget);
-            result = IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8);
-          *//*  Map map = gson.fromJson(IOUtils.toString(response.getEntity().getContent(), Consts.UTF_8), Map.class);
-            Map data = (Map) ((List) map.get("data")).get(0);
-            System.out.println(data);*//*
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("cli:"+(System.currentTimeMillis() - c));
     }*/
+   @Value("${gf.intPrice:1}")
+    private double intPrice;
+    private double grid = intPrice*0.01;
+    private int lastNet =0;
+    private int minNet = -5;
+    private int volume =1000;
+    //int maxNet = 5;
 
-
-
-    public  void check() {
+    public void check() {
        long c = System.currentTimeMillis();
        Gson gson = new Gson();
-      // String result = null;
-       String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878003&dse_sessionId="+gfSession;
+       String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878004&dse_sessionId="+gfSession;
         try {
             URL url = new URL(httpUrl);
             HttpURLConnection connection = (HttpURLConnection) url .openConnection();
@@ -100,18 +72,70 @@ public class GridTradingServiceImpl  implements GridTradingService {
             Map map = gson.fromJson(IOUtils.toString(connection.getInputStream(), Consts.UTF_8), Map.class);
             Map data = (Map)((List) map.get("data")).get(0);
             Double lastPrice = MapUtils.getDouble(data,"last_price");
-            System.out.println(lastPrice);
-
-            GridTrading model = new GridTrading();
-            model.setFund("878002");
-            model.setPrice(lastPrice);
-            model.setLogTime(new Date());
-            gridTradingDao.save(model);
+            checkPrice(lastPrice);
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("con:"+(System.currentTimeMillis() - c));
     }
 
+    /**
+     * classname:com.gf.etrade.control.NXBUF2Control
+     method:nxbentrust
+     dse_sessionId:34520E64C61650EF6CFE9D70DE84E7C0
+     fund_code:878004
+     entrust_amount:2000
+     entrust_price:1.302
+     entrust_bs:1
+     auto_deal:true
 
+     classname:com.gf.etrade.control.NXBUF2Control
+     method:nxbentrust
+     dse_sessionId:34520E64C61650EF6CFE9D70DE84E7C0
+     fund_code:878004
+     entrust_amount:2000
+     entrust_price:1.302
+     entrust_bs:2
+     auto_deal:true
+
+     return :{"total":1,"data":{},"success":true,"failtruetotal":1,"successtotal":0}
+     * */
+    public void  order(double lastPrice, int amount, String bs){
+        String httpUrl ="https://etrade.gf.com.cn/entry?entrust_bs="+bs+"&auto_deal=true&classname=com.gf.etrade.control.NXBUF2Control&method=nxbentrust&fund_code=878004&dse_sessionId="+gfSession+"&entrust_price="+lastPrice+"&entrust_amount="+amount;
+        try {
+            URL url = new URL(httpUrl);
+            HttpURLConnection connection = (HttpURLConnection) url .openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Cookie",  gfCookie);
+            connection.connect();
+            // result= IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
+            String result = IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
+            System.out.println(result);
+
+            GridTrading model = new GridTrading();
+            model.setFund("878004");
+            model.setPrice(lastPrice);
+            model.setLogTime(new Date());
+            model.setType(bs);
+            model.setAmount(amount);
+            gridTradingDao.save(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void  checkPrice(double lastPrice){
+       /* double upPrice = grid*(lastNet+1) +intPrice;
+        double downPrice = grid*(lastNet-1) +intPrice;*/
+        double curPrice = grid*(lastNet) +intPrice;
+        int step = new Double((lastPrice - curPrice)/grid).intValue();
+        if(step>0){
+            lastNet+=step;
+            order(lastPrice,volume*step,"2");//sell
+        }else if(step<0){
+            lastNet+=step;
+            if(lastNet>=minNet){
+                order(lastPrice,volume*step,"1"); //buy
+            }
+        }
+    }
 }

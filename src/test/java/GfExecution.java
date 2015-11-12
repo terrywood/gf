@@ -9,7 +9,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -78,7 +77,7 @@ public class GfExecution {
      * A thread that performs a GET.
      */
     static class GetThread extends Thread {
-        ObjectMapper  objectMapper = new ObjectMapper();
+       // ObjectMapper  objectMapper = new ObjectMapper();
         private final CloseableHttpClient httpClient;
         private final HttpContext context;
         private final HttpGet httpget;
