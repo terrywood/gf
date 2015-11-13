@@ -47,16 +47,20 @@ public class GridTradingServiceImpl  implements GridTradingService {
     private String gfSession;
     @Autowired
     private GridTradingDao gridTradingDao;
-   /* @PostConstruct
-    public  void init(){
-    }*/
-   @Value("${gf.intPrice:1}")
+    @Value("${gf.intPrice:1.29}")
     private double intPrice;
     private double grid = intPrice*0.01;
     private int lastNet =0;
     private int minNet = -5;
     private int volume =1000;
     //int maxNet = 5;
+
+    @PostConstruct
+    public  void init(){
+        grid = intPrice*0.01;
+        System.out.println(intPrice);
+        System.out.println(grid);
+    }
 
     public void check() {
        long c = System.currentTimeMillis();
@@ -68,7 +72,6 @@ public class GridTradingServiceImpl  implements GridTradingService {
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Cookie",  gfCookie);
             connection.connect();
-           // result= IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
             Map map = gson.fromJson(IOUtils.toString(connection.getInputStream(), Consts.UTF_8), Map.class);
             Map data = (Map)((List) map.get("data")).get(0);
             Double lastPrice = MapUtils.getDouble(data,"last_price");
@@ -101,6 +104,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
      return :{"total":1,"data":{},"success":true,"failtruetotal":1,"successtotal":0}
      * */
     public void  order(double lastPrice, int amount, String bs){
+        System.out.println("amount order"+amount);
         String httpUrl ="https://etrade.gf.com.cn/entry?entrust_bs="+bs+"&auto_deal=true&classname=com.gf.etrade.control.NXBUF2Control&method=nxbentrust&fund_code=878004&dse_sessionId="+gfSession+"&entrust_price="+lastPrice+"&entrust_amount="+amount;
         try {
             URL url = new URL(httpUrl);
@@ -108,10 +112,8 @@ public class GridTradingServiceImpl  implements GridTradingService {
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Cookie",  gfCookie);
             connection.connect();
-            // result= IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
             String result = IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
             System.out.println(result);
-
             GridTrading model = new GridTrading();
             model.setFund("878004");
             model.setPrice(lastPrice);
