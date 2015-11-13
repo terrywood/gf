@@ -63,7 +63,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
     }
 
     public void check() {
-       long c = System.currentTimeMillis();
+      // long c = System.currentTimeMillis();
        Gson gson = new Gson();
        String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.NXBUF2Control&method=nxbQueryPrice&fund_code=878004&dse_sessionId="+gfSession;
         try {
@@ -79,7 +79,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("con:"+(System.currentTimeMillis() - c));
+        //System.out.println("con:"+(System.currentTimeMillis() - c));
     }
 
     /**
@@ -107,13 +107,15 @@ public class GridTradingServiceImpl  implements GridTradingService {
         System.out.println("amount order"+amount);
         String httpUrl ="https://etrade.gf.com.cn/entry?entrust_bs="+bs+"&auto_deal=true&classname=com.gf.etrade.control.NXBUF2Control&method=nxbentrust&fund_code=878004&dse_sessionId="+gfSession+"&entrust_price="+lastPrice+"&entrust_amount="+amount;
         try {
+
             URL url = new URL(httpUrl);
-            HttpURLConnection connection = (HttpURLConnection) url .openConnection();
+       /*     HttpURLConnection connection = (HttpURLConnection) url .openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Cookie",  gfCookie);
             connection.connect();
             String result = IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
-            System.out.println(result);
+            System.out.println(result);*/
+
             GridTrading model = new GridTrading();
             model.setFund("878004");
             model.setPrice(lastPrice);
@@ -132,11 +134,11 @@ public class GridTradingServiceImpl  implements GridTradingService {
         int step = new Double((lastPrice - curPrice)/grid).intValue();
         if(step>0){
             lastNet+=step;
-            order(lastPrice,volume*step,"2");//sell
+            order(lastPrice,Math.abs(volume*step),"2");//sell
         }else if(step<0){
             lastNet+=step;
             if(lastNet>=minNet){
-                order(lastPrice,volume*step,"1"); //buy
+                order(lastPrice,Math.abs(volume*step),"1"); //buy
             }
         }
     }
