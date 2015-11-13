@@ -79,30 +79,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //System.out.println("con:"+(System.currentTimeMillis() - c));
     }
-
-    /**
-     * classname:com.gf.etrade.control.NXBUF2Control
-     method:nxbentrust
-     dse_sessionId:34520E64C61650EF6CFE9D70DE84E7C0
-     fund_code:878004
-     entrust_amount:2000
-     entrust_price:1.302
-     entrust_bs:1
-     auto_deal:true
-
-     classname:com.gf.etrade.control.NXBUF2Control
-     method:nxbentrust
-     dse_sessionId:34520E64C61650EF6CFE9D70DE84E7C0
-     fund_code:878004
-     entrust_amount:2000
-     entrust_price:1.302
-     entrust_bs:2
-     auto_deal:true
-
-     return :{"total":1,"data":{},"success":true,"failtruetotal":1,"successtotal":0}
-     * */
     public void  order(double lastPrice, int amount, String bs){
         System.out.println("amount order"+amount);
         String httpUrl ="https://etrade.gf.com.cn/entry?entrust_bs="+bs+"&auto_deal=true&classname=com.gf.etrade.control.NXBUF2Control&method=nxbentrust&fund_code=878004&dse_sessionId="+gfSession+"&entrust_price="+lastPrice+"&entrust_amount="+amount;
