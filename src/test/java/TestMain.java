@@ -1,15 +1,20 @@
+import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2015/11/11 0011.
  */
 public class TestMain {
-    public static void main(String[] args)  {
+    public static void main(String[] args) throws FileNotFoundException {
 
   /*      String[] aa = StringUtils.split("A B C D E F G H I J K L M N O P Q R S T U V W X Y Z", " ");
         for(String a : aa){
@@ -22,16 +27,19 @@ public class TestMain {
         }*/
 
 
-        TestMain test = new TestMain();
+         TestMain test = new TestMain();
 
-        test.checkPrice(100d);
+
+
+
+    /*    test.checkPrice(100d);
         test.checkPrice(99d);
         test.checkPrice(98d);
         test.checkPrice(97d);
         test.checkPrice(96d);
         test.checkPrice(95d);
         test.checkPrice(94.5d);
-
+*/
 
     }
 

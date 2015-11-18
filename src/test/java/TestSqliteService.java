@@ -1,8 +1,13 @@
+import com.google.gson.Gson;
 import com.gt.bmf.service.GfQueryLogService;
 import com.gt.bmf.service.GridTradingService;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TestSqliteService {
@@ -25,6 +30,16 @@ public class TestSqliteService {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring/bmf_applicationContext.xml");
 
         service = (GridTradingService) ctx.getBean("gridTradingService");
+
+/*
+
+        Gson gson = new Gson();
+        List<ArrayList> list  =gson.fromJson(new FileReader("D:\\Documents\\gf\\doc\\878004\\20151113.json"),List.class);
+        for(ArrayList al :list){
+            Double price  = (Double)al.get(1);
+            service.checkPrice(price);
+        }*/
+
 
       /*  for(int i=0;i<25;i++)
            service.buy(1d,1d);

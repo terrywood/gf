@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-@Service("gfQueryLogBedService")
+//@Service("gfQueryLogBedService")
 public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implements GfQueryLogService {
     @Value("${gf.cookie}")
     private String gfCookie;
@@ -62,7 +62,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
     private static List<Double> downBuy = new ArrayList<Double>();
     DecimalFormat decimalFormat = new DecimalFormat("###.######");
 
-    @Autowired
+    //@Autowired
 	@Qualifier("gfQueryLogDao")
 	@Override
 	public void setBmfBaseDao(BmfBaseDao<GfQueryLog> bmfBaseDao) {

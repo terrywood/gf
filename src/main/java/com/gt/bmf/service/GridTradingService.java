@@ -5,4 +5,6 @@ package com.gt.bmf.service;
  */
 public interface GridTradingService {
     public void check();
+    public void setInitPrice(double intPrice);
+    public void  checkPrice(double lastPrice);
 }

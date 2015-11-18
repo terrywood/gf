@@ -81,7 +81,7 @@
 			</bean>
 		</property>
 		<property name="cronExpression">
-			<value>0/4 * * * * ?</value>
+			<value>0/1 * * * * ?</value>
 		</property>
 	</bean>
 
