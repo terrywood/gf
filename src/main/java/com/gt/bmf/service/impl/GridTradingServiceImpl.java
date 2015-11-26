@@ -124,7 +124,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
         double curPrice = grid*(lastNet) +intPrice;
         int step = new Double((lastPrice - curPrice)/grid).intValue();
 
-        System.out.println("lastPrice["+lastPrice+"] gridPrice["+curPrice+"] step["+step+"]");
+        //System.out.println("lastPrice["+lastPrice+"] gridPrice["+curPrice+"] step["+step+"]");
 
         if(step>0){
             lastNet+=step;

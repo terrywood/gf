@@ -120,9 +120,9 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             initVariance(upSalePrice,upBuyPrice,downSalePrice,downBuyPrice);
             double buyTotal = upBuyPrice+downBuyPrice;
             double saleTotal = upSalePrice+downSalePrice;
-            if(saleTotal<1.998d){
-                //this.buy(upSalePrice,downSalePrice);
-                double upSaleAmount  =  Integer.valueOf(upData.get("sale_amount1").toString());
+            if(saleTotal<1.997d){
+                this.buy(upSalePrice,downSalePrice);
+             /*   double upSaleAmount  =  Integer.valueOf(upData.get("sale_amount1").toString());
                 double downSaleAmount  =  Integer.valueOf(downData.get("sale_amount1").toString());
                 GfQueryLog model = new GfQueryLog();
                 model.setType("B");
@@ -137,7 +137,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 model.setUpVariance(v1);
                 model.setDownVariance(v2);
 
-                this.save(model);
+                this.save(model);*/
 
                System.out.println("Buy：S+["+String.valueOf(saleTotal)+"]　  code[878004,878005]");
                System.out.println("upData->"+upData);
@@ -147,7 +147,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             }else if(buyTotal>2.003d){
                 this.sale(upBuyPrice, downBuyPrice);
 
-                GfQueryLog model = new GfQueryLog();
+              /*  GfQueryLog model = new GfQueryLog();
                 model.setType("S");
                 model.setDownPrice(upBuyPrice);
                 model.setUpPrice(downBuyPrice);
@@ -161,7 +161,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
                 model.setUpVariance(v1);
                 model.setDownVariance(v2);
 
-                this.save(model);
+                this.save(model);*/
 
              //  System.out.println((System.currentTimeMillis()-c1) +"ms, upPrice["+upBuyPrice+"] download["+downBuyPrice+"] sale price["+buyTotal+"]" );
                System.out.println("Sale：S+["+String.valueOf(saleTotal)+"]　B+["+String.valueOf(buyTotal)+"] code[878004,878005]");
