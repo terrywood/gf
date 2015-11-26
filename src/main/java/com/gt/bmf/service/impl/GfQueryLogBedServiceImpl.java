@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-//@Service("gfQueryLogBedService")
+@Service("gfQueryLogBedService")
 public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implements GfQueryLogService {
     @Value("${gf.cookie}")
     private String gfCookie;
@@ -121,7 +121,7 @@ public class GfQueryLogBedServiceImpl extends BmfBaseServiceImpl<GfQueryLog> imp
             double buyTotal = upBuyPrice+downBuyPrice;
             double saleTotal = upSalePrice+downSalePrice;
             if(saleTotal<1.998d){
-                this.buy(upSalePrice,downSalePrice);
+                //this.buy(upSalePrice,downSalePrice);
                 double upSaleAmount  =  Integer.valueOf(upData.get("sale_amount1").toString());
                 double downSaleAmount  =  Integer.valueOf(downData.get("sale_amount1").toString());
                 GfQueryLog model = new GfQueryLog();
