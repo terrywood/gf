@@ -63,7 +63,7 @@
         <property name="triggers">
             <list>
                 <ref bean="auditGridTrigger"/>
-                <ref bean="auditBedTrigger"/>
+            <!--    <ref bean="auditBedTrigger"/>-->
             </list>
         </property>
         <property name="startupDelay" value="10"/>

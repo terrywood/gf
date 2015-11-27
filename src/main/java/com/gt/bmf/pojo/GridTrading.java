@@ -24,7 +24,14 @@ public class GridTrading {
     private Integer amount;
     private String type;
     private String fund;
+    private Integer lastNet;
+    public Integer getLastNet() {
+        return lastNet;
+    }
 
+    public void setLastNet(Integer lastNet) {
+        this.lastNet = lastNet;
+    }
     public Long getId() {
         return id;
     }

@@ -113,6 +113,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
             model.setLogTime(new Date());
             model.setType(bs);
             model.setAmount(amount);
+            model.setLastNet(lastNet);
             gridTradingDao.save(model);
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,12 +124,12 @@ public class GridTradingServiceImpl  implements GridTradingService {
         double downPrice = grid*(lastNet-1) +intPrice;*/
         double curPrice = grid*(lastNet) +intPrice;
         int step = new Double((lastPrice - curPrice)/grid).intValue();
-
         //System.out.println("lastPrice["+lastPrice+"] gridPrice["+curPrice+"] step["+step+"]");
-
         if(step>0){
             lastNet+=step;
-            order(lastPrice,Math.abs(volume*step),"2");//sell
+            if(lastNet>=minNet){
+                order(lastPrice,Math.abs(volume*step),"2");//sell
+            }
         }else if(step<0){
             lastNet+=step;
             if(lastNet>=minNet){
