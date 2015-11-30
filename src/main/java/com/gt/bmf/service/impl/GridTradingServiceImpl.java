@@ -51,7 +51,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
     private double intPrice;
     private double grid = intPrice*0.01;
     private int lastNet =0;
-    private int minNet = -5;
+    private int minNet = -10;
     private int volume =1000;
     //int maxNet = 5;
 
@@ -127,7 +127,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
         //System.out.println("lastPrice["+lastPrice+"] gridPrice["+curPrice+"] step["+step+"]");
         if(step>0){
             lastNet+=step;
-            if(lastNet>=minNet){
+            if(lastNet>minNet){
                 order(lastPrice,Math.abs(volume*step),"2");//sell
             }
         }else if(step<0){

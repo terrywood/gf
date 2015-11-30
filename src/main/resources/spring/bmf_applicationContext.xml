@@ -44,6 +44,7 @@
             <value>0/1 * * * * ?</value>
         </property>
     </bean>
+
     <bean id="auditBedTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail">
             <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -59,11 +60,27 @@
         </property>
     </bean>
 
+    <bean id="auditTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="concurrent" value="false"/>
+                <property name="targetObject" ref="gfQueryLogService"></property>
+                <property name="targetMethod">
+                    <value>checkData</value>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0/3 * * * * ?</value>
+        </property>
+    </bean>
+
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
+                <ref bean="auditTrigger"/>
                 <ref bean="auditGridTrigger"/>
-            <!--    <ref bean="auditBedTrigger"/>-->
+               <!-- <ref bean="auditBedTrigger"/>-->
             </list>
         </property>
         <property name="startupDelay" value="10"/>

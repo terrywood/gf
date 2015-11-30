@@ -110,7 +110,7 @@ public class GfQueryLogServiceImpl extends BmfBaseServiceImpl<GfQueryLog> implem
 
 
             if(saleTotal<1.998d){
-                this.buy(upSalePrice,downSalePrice);
+                //this.buy(upSalePrice,downSalePrice);
                 GfQueryLog model = new GfQueryLog();
                 model.setType("B");
                 model.setDownPrice(downSalePrice);
