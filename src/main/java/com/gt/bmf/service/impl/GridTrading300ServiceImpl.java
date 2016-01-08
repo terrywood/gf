@@ -46,12 +46,12 @@ public class GridTrading300ServiceImpl implements GridTradingService {
         System.out.println(grid);
     }
 
-    public void setInitPrice(double intPrice){
+/*    public void setInitPrice(double intPrice){
         this.intPrice = intPrice;
         grid = intPrice*0.01;
         System.out.println(intPrice);
         System.out.println(grid);
-    }
+    }*/
 
 
 

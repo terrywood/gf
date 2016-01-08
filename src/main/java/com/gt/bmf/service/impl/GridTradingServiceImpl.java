@@ -64,13 +64,13 @@ public class GridTradingServiceImpl  implements GridTradingService {
         System.out.println(grid);
     }
 
-    public void setInitPrice(double intPrice){
+ /*   public void setInitPrice(double intPrice){
         this.intPrice = intPrice;
         grid = intPrice*0.01;
         System.out.println(intPrice);
         System.out.println(grid);
     }
-
+*/
 
 
     public  double getLastPrice(){
@@ -85,7 +85,7 @@ public class GridTradingServiceImpl  implements GridTradingService {
             Map map = gson.fromJson(IOUtils.toString(connection.getInputStream(), Consts.UTF_8), Map.class);
             Map data = (Map)((List) map.get("data")).get(0);
             return MapUtils.getDouble(data,"last_price");
-          //
+
         } catch (Exception e) {
             e.printStackTrace();
         }
